@@ -26,3 +26,8 @@ python manage.py migrate
 ```console
 python manage.py runserver
 ```
+
+API Documentation- Postman Collection
+```console
+https://documenter.getpostman.com/view/21476998/2sA3JJAPEK
+```
