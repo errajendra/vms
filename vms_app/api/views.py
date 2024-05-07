@@ -1,7 +1,11 @@
+from django.utils import timezone
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
 from .serializers import (
-    VendorSerializer, PurchaseOrderSerializer
+    VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer,
 )
 from ..models import (
     Vendor, PurchaseOrder
@@ -31,3 +35,34 @@ class PurchaseOrderView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PurchaseOrderSerializer
     queryset = PurchaseOrder.objects.all()
+
+
+
+""" 
+Vendor Performance Matrix.
+"""
+class VendorPerformanceAPIView(APIView):
+    def get(self, request, vendor_id):
+        try:
+            print(vendor_id)
+            vendor = Vendor.objects.get(id=vendor_id)
+        except Vendor.DoesNotExist:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = VendorPerformanceSerializer(vendor)
+        return Response(serializer.data)
+
+
+
+class AcknowledgePurchaseOrderView(APIView):
+    def post(self, request, po_id):
+        try:
+            purchase_order = PurchaseOrder.objects.get(id=po_id)
+        except PurchaseOrder.DoesNotExist:
+            return Response({'error': 'Purchase order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update acknowledgment date
+        purchase_order.acknowledgment_date = timezone.now()
+        purchase_order.save()
+
+        return Response({'message': 'Purchase order acknowledged successfully'})

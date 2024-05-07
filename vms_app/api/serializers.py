@@ -26,3 +26,14 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         # Serialize the vendor field using the VendorSerializer
         data["vendor"] = VendorSerializer(instance.vendor).data
         return data
+
+
+
+# Define a serializer for the Vendor Performance Matrix
+class VendorPerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = (
+            "on_time_delivery_rate", "quality_rating_avg", "average_response_time",
+            "fulfillment_rate"
+        )
